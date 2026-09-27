@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import client from '../api/client';
 
-interface User { id: string; name: string; email: string; }
+export interface User { id: string; name: string; email: string; team?: string; }
 interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;

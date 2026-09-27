@@ -234,10 +234,14 @@ export default function Dashboard() {
         <TrafficOverview data={{
           '1H': Array.from({ length: 24 }).map((_, i) => ({
             t: `${Math.floor(i / 2)}:${i % 2 === 0 ? '00' : '30'}`,
-            flowRate: Math.max(100, Math.floor(flowCount / 24) + Math.floor(Math.random() * (flowCount / 50)) * (i === 20 ? 5 : 1)),
-            activeConn: Math.max(50, Math.floor((flowCount / 24) * 0.3) + Math.floor(Math.random() * 100)),
-            anomalies: i >= 18 ? attackCount : Math.floor(Math.random() * 5),
-          }))
+            inbound: Math.max(100, Math.floor(flowCount / 24) + Math.floor(Math.random() * (flowCount / 50)) * (i === 20 ? 5 : 1)),
+            outbound: Math.max(50, Math.floor((flowCount / 24) * 0.3) + Math.floor(Math.random() * 100)),
+            suspicious: i >= 18 ? attackCount : Math.floor(Math.random() * 5),
+            normal: Math.max(0, Math.floor(flowCount / 24) - (i >= 18 ? attackCount : 0)),
+          })),
+          '6H': mockTrafficOverview['6H'],
+          '24H': mockTrafficOverview['24H'],
+          '7D': mockTrafficOverview['7D'],
         }} />
       </div>
     </AppShell>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
+import { riskLevelFromScore } from '../../utils/formatters';
 
 type Severity = 'Critical' | 'High' | 'Medium' | 'Low' | 'Safe' | 'Info' | 'Forecast' | 'Muted';
 
@@ -42,17 +43,13 @@ export function Badge({ severity = 'Muted', children, className, dot = false }: 
 }
 
 export function RiskBadge({ score }: { score: number }) {
+  const level = riskLevelFromScore(score);
   const severity: Severity =
-    score >= 80 ? 'Critical' :
-    score >= 65 ? 'High'     :
-    score >= 45 ? 'Medium'   :
-    score >= 25 ? 'Low'      : 'Safe';
-  const label =
-    score >= 80 ? 'CRITICAL' :
-    score >= 65 ? 'HIGH'     :
-    score >= 45 ? 'MEDIUM'   :
-    score >= 25 ? 'LOW'      : 'SAFE';
-  return <Badge severity={severity} dot>{label} · {score}%</Badge>;
+    level === 'CRITICAL' ? 'Critical' :
+    level === 'HIGH' ? 'High' :
+    level === 'MEDIUM' ? 'Medium' :
+    level === 'LOW' ? 'Low' : 'Safe';
+  return <Badge severity={severity} dot>{level} · {score}%</Badge>;
 }
 
 export function StageBadge({ stage }: { stage: string }) {

@@ -33,15 +33,16 @@ interface EmptyStateProps {
   icon?: React.ReactNode;
   title: string;
   description?: string;
+  message?: string;
   action?: React.ReactNode;
 }
 
-export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+export function EmptyState({ icon, title, description, message, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-3">
       {icon && <div className="text-text-disabled text-3xl">{icon}</div>}
       <p className="text-text-secondary font-medium text-sm">{title}</p>
-      {description && <p className="text-text-muted text-xs max-w-xs">{description}</p>}
+      {(description || message) && <p className="text-text-muted text-xs max-w-xs">{description || message}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   );

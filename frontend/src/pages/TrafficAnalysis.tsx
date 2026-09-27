@@ -154,7 +154,7 @@ export default function TrafficAnalysis() {
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e1e1e', borderColor: '#333', fontSize: '12px' }}
                   itemStyle={{ color: '#e0e0e0' }}
-                  formatter={(val: number) => `${val}%`}
+                  formatter={(val: any) => `${val}%`}
                 />
                 <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#a0a0a0' }} />
               </PieChart>

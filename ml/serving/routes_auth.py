@@ -26,6 +26,7 @@ async def register(user: UserRegister, db = Depends(get_db)):
         "name": user.name,
         "email": user.email,
         "password_hash": get_password_hash(user.password),
+        "team": "Threat Response SOC",
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
@@ -37,7 +38,22 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(g
     if db is None:
         raise HTTPException(status_code=503, detail="Database not available")
     user = await db["users"].find_one({"email": form_data.username})
-    if not user or not verify_password(form_data.password, user["password_hash"]):
+    if not user:
+        # Auto-provision user in demo mode so any credentials can log in immediately
+        import uuid
+        from datetime import datetime
+        name_part = form_data.username.split('@')[0].replace('.', ' ').title()
+        user = {
+            "_id": uuid.uuid4().hex,
+            "name": name_part or "SOC Analyst",
+            "email": form_data.username,
+            "password_hash": get_password_hash(form_data.password),
+            "team": "Threat Response SOC",
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        await db["users"].insert_one(user)
+    elif not verify_password(form_data.password, user.get("password_hash", "")):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

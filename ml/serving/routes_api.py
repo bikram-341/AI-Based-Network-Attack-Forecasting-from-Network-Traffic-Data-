@@ -53,3 +53,62 @@ async def get_network_states(current_user: dict = Depends(get_current_user), db 
         raise HTTPException(status_code=503, detail="Database not available")
     states = await db["network_states"].find({"user_id": current_user["id"]}).sort("timestamp", -1).limit(50).to_list(50)
     return states
+
+
+class SettingsPayload(BaseModel):
+    primary_model: Optional[str] = "gru"
+    rollout_horizon: Optional[int] = 8
+    discount_factor: Optional[float] = 0.85
+    critical_threshold: Optional[int] = 80
+    high_threshold: Optional[int] = 65
+    predictive_alerting: Optional[bool] = True
+
+
+@router.get("/settings")
+async def get_settings(current_user: dict = Depends(get_current_user), db = Depends(get_db)):
+    if db is not None:
+        doc = await db["user_settings"].find_one({"user_id": current_user["id"]})
+        if doc:
+            return {
+                "primary_model": doc.get("primary_model", "gru"),
+                "rollout_horizon": doc.get("rollout_horizon", 8),
+                "discount_factor": doc.get("discount_factor", 0.85),
+                "critical_threshold": doc.get("critical_threshold", 80),
+                "high_threshold": doc.get("high_threshold", 65),
+                "predictive_alerting": doc.get("predictive_alerting", True),
+            }
+    return {
+        "primary_model": "gru",
+        "rollout_horizon": 8,
+        "discount_factor": 0.85,
+        "critical_threshold": 80,
+        "high_threshold": 65,
+        "predictive_alerting": True
+    }
+
+
+@router.post("/settings")
+async def save_settings(payload: SettingsPayload, current_user: dict = Depends(get_current_user), db = Depends(get_db)):
+    from datetime import datetime
+    try:
+        import ml.serving.inference_server as inf
+        if payload.critical_threshold is not None:
+            inf.RISK_THRESH["critical"] = payload.critical_threshold
+        if payload.high_threshold is not None:
+            inf.RISK_THRESH["high"] = payload.high_threshold
+        if payload.discount_factor is not None:
+            inf.RISK_DISCOUNT = payload.discount_factor
+        if payload.rollout_horizon is not None:
+            inf.ROLLOUT_K = payload.rollout_horizon
+    except Exception:
+        pass
+
+    data = payload.dict()
+    if db is not None:
+        await db["user_settings"].update_one(
+            {"user_id": current_user["id"]},
+            {"$set": {**data, "user_id": current_user["id"], "updated_at": datetime.utcnow()}},
+            upsert=True
+        )
+    return {"message": "Settings updated successfully", "settings": data}
+

@@ -196,7 +196,15 @@ export default function Login() {
                 />
                 <span className="text-xs text-text-secondary">Remember me</span>
               </label>
-              <button type="button" className="text-xs text-forecast hover:text-forecast-bright">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('analyst@soc.example');
+                  setPassword('OmniSentinel2026!');
+                  setError('');
+                }}
+                className="text-xs text-forecast hover:text-forecast-bright"
+              >
                 Demo credentials accepted
               </button>
             </div>

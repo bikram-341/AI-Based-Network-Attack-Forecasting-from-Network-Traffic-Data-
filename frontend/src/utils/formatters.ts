@@ -36,17 +36,37 @@ export function getDateTimeLabel(): string {
   });
 }
 
-export function riskLevelFromScore(score: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'SAFE' {
-  if (score >= 80) return 'CRITICAL';
-  if (score >= 65) return 'HIGH';
+function getStoredThresholds() {
+  try {
+    const s = localStorage.getItem('omnisentinel_settings');
+    if (s) {
+      const parsed = JSON.parse(s);
+      return {
+        critical: typeof parsed.criticalThreshold === 'number' ? parsed.criticalThreshold : 80,
+        high: typeof parsed.highThreshold === 'number' ? parsed.highThreshold : 65,
+      };
+    }
+  } catch (e) {}
+  return { critical: 80, high: 65 };
+}
+
+export function riskLevelFromScore(score: number, criticalThresh?: number, highThresh?: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'SAFE' {
+  const { critical, high } = getStoredThresholds();
+  const c = criticalThresh ?? critical;
+  const h = highThresh ?? high;
+  if (score >= c) return 'CRITICAL';
+  if (score >= h) return 'HIGH';
   if (score >= 45) return 'MEDIUM';
   if (score >= 25) return 'LOW';
   return 'SAFE';
 }
 
-export function riskColorClass(score: number): string {
-  if (score >= 80) return 'text-critical';
-  if (score >= 65) return 'text-warning';
+export function riskColorClass(score: number, criticalThresh?: number, highThresh?: number): string {
+  const { critical, high } = getStoredThresholds();
+  const c = criticalThresh ?? critical;
+  const h = highThresh ?? high;
+  if (score >= c) return 'text-critical';
+  if (score >= h) return 'text-warning';
   if (score >= 45) return 'text-elevated';
   if (score >= 25) return 'text-info';
   return 'text-safe';

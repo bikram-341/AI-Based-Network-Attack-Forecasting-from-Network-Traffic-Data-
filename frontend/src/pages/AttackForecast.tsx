@@ -7,7 +7,7 @@ import { ProgressBar, Spinner } from '../components/common/States';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { Zap, Play, ArrowRight, BarChart2 } from 'lucide-react';
 import { cn } from '../utils/cn';
-import { confidenceLabel } from '../utils/formatters';
+import { confidenceLabel, riskLevelFromScore } from '../utils/formatters';
 
 const STAGE_COLOR: Record<string, string> = {
   Reconnaissance: '#f97316',
@@ -202,7 +202,10 @@ export default function AttackForecast() {
                       <span className="text-text-muted">Risk</span>
                       <span className="text-text-secondary">{step.riskScore}%</span>
                     </div>
-                    <ProgressBar value={step.riskScore} color={step.riskScore >= 80 ? 'critical' : step.riskScore >= 65 ? 'warning' : 'forecast'} />
+                    <ProgressBar
+                      value={step.riskScore}
+                      color={riskLevelFromScore(step.riskScore) === 'CRITICAL' ? 'critical' : riskLevelFromScore(step.riskScore) === 'HIGH' ? 'warning' : 'forecast'}
+                    />
                   </div>
                   {step.horizon !== 'Now' && (
                     <div className="text-[10px] text-forecast">

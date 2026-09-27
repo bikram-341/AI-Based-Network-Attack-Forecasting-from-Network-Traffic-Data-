@@ -5,6 +5,7 @@ import { Badge } from '../components/common/Badge';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { GitBranch, Check, Zap, Clock } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { riskColorClass } from '../utils/formatters';
 
 export default function AttackTimeline() {
   const { analysis } = useAnalysis();
@@ -85,7 +86,7 @@ export default function AttackTimeline() {
                       {ev.riskScore && (
                         <div className="mt-3 pt-3 border-t border-border-subtle/50 flex items-center justify-between text-[10px]">
                           <span className="text-text-muted">Associated Risk Score</span>
-                          <span className={cn('font-semibold', ev.riskScore >= 80 ? 'text-critical' : ev.riskScore >= 65 ? 'text-warning' : 'text-text-primary')}>
+                          <span className={cn('font-semibold', riskColorClass(ev.riskScore))}>
                             {Math.round(ev.riskScore)}%
                           </span>
                         </div>

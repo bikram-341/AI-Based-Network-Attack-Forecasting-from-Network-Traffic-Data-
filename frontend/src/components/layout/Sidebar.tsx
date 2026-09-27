@@ -135,7 +135,7 @@ export function Sidebar() {
           <>
             <div className="flex-1 min-w-0">
               <div className="text-[12px] font-medium text-text-primary truncate">{user?.name}</div>
-              <div className="text-[10px] text-text-muted">{user?.team}</div>
+              <div className="text-[10px] text-text-muted">{user?.team || user?.email || 'SOC Analyst'}</div>
             </div>
             <button
               onClick={logout}
